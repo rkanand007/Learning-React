@@ -5,6 +5,7 @@ import { createContext, useReducer } from "react";
 export const PostList = createContext({
   postList: [],
   addPost: () => {},
+  addInitialPosts: () => {},
   deletePost: () => {},
 });
 
@@ -14,6 +15,8 @@ const postListReducer = (currPostList, action) => {
     newPostList = currPostList.filter(
       (post) => post.id !== action.payload.postId
     );
+  } else if (action.type === "ADD_INITIAL_POST") {
+    newPostList = action.payload.posts;
   } else if (action.type === "ADD_POST") {
     newPostList = [action.payload, ...currPostList];
   }
@@ -21,10 +24,7 @@ const postListReducer = (currPostList, action) => {
 };
 
 const PostListProvider = ({ children }) => {
-  const [postList, dispatchPostList] = useReducer(
-    postListReducer,
-    Default_Post_List
-  );
+  const [postList, dispatchPostList] = useReducer(postListReducer, []);
 
   const addPost = (userId, postTitle, postBody, reactions, tags) => {
     dispatchPostList({
@@ -40,6 +40,15 @@ const PostListProvider = ({ children }) => {
     });
   };
 
+  const addInitialPosts = (posts) => {
+    dispatchPostList({
+      type: "ADD_INITIAL_POST",
+      payload: {
+        posts,
+      },
+    });
+  };
+
   const deletePost = (postId) => {
     dispatchPostList({
       type: "DELETE_POST",
@@ -50,29 +59,12 @@ const PostListProvider = ({ children }) => {
   };
 
   return (
-    <PostList.Provider value={{ postList, addPost, deletePost }}>
+    <PostList.Provider
+      value={{ postList, addPost, addInitialPosts, deletePost }}
+    >
       {children}
     </PostList.Provider>
   );
 };
-
-const Default_Post_List = [
-  {
-    id: "1",
-    title: "Go to Mountain",
-    body: "Hey Everyone, I am at Everest",
-    reactions: 7,
-    userId: "user-9",
-    tags: ["vacation", "trekking", "framewithrk"],
-  },
-  {
-    id: "2",
-    title: "Go to Beach",
-    body: "Hey Everyone, I am at Goa beach",
-    reactions: 20,
-    userId: "user-10",
-    tags: ["vacation", "sunset", "framewithrk"],
-  },
-];
 
 export default PostListProvider;
