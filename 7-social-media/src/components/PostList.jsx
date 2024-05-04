@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useContext, useEffect } from "react";
 import Post from "./Post";
 import { PostList as PostListData } from "../store/post-list-store";
